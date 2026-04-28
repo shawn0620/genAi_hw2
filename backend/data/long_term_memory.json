@@ -1,0 +1,107 @@
+{
+  "83ccf14f-261d-472a-86d0-034008045c14": {
+    "facts": [
+      {
+        "id": "1774945368394_91bxgz",
+        "text": "使用者名字是 啥名字",
+        "keywords": [
+          "使用者名字是",
+          "啥名字"
+        ],
+        "createdAt": 1774945368394,
+        "lastSeenAt": 1774945368394,
+        "lastUsedAt": 1774945396719
+      }
+    ],
+    "updatedAt": 1774945368394
+  },
+  "dec98fd6-19ae-4dd1-a7c5-84903ccadce9": {
+    "facts": [
+      {
+        "id": "1777361978960_9ok0sn",
+        "text": "使用者名字是 許子翔",
+        "keywords": [
+          "使用者名字是",
+          "許子翔"
+        ],
+        "createdAt": 1777361978960,
+        "lastSeenAt": 1777361978960,
+        "lastUsedAt": 1777362619300
+      },
+      {
+        "id": "1777361969368_zek712",
+        "text": "使用者名字是 啥名",
+        "keywords": [
+          "使用者名字是",
+          "啥名"
+        ],
+        "createdAt": 1777361969368,
+        "lastSeenAt": 1777361969368,
+        "lastUsedAt": 1777362619300
+      }
+    ],
+    "updatedAt": 1777361978960
+  },
+  "14252c71-19ee-47c3-83b5-4e241fdb3695": {
+    "facts": [
+      {
+        "id": "1777381233668_g5mwfj",
+        "text": "使用者喜歡 吃白飯",
+        "factKey": "user_like:吃白飯",
+        "factCategory": "preference",
+        "keywords": [
+          "使用者喜歡",
+          "使用",
+          "用者",
+          "者喜",
+          "喜歡",
+          "吃白飯",
+          "吃白",
+          "白飯"
+        ],
+        "createdAt": 1777381233668,
+        "lastSeenAt": 1777381233668,
+        "lastUsedAt": 1777381878552
+      },
+      {
+        "id": "1777381011927_b3jly6",
+        "text": "使用者學號是 16550160",
+        "factKey": "user_student_id",
+        "factCategory": "profile",
+        "keywords": [
+          "16550160",
+          "使用者學號是",
+          "使用",
+          "用者",
+          "者學",
+          "學號",
+          "號是"
+        ],
+        "createdAt": 1777381011927,
+        "lastSeenAt": 1777381216807,
+        "lastUsedAt": 1777381216094
+      },
+      {
+        "id": "1777380950767_n18w81",
+        "text": "使用者名字是 許子翔",
+        "factKey": "user_name",
+        "factCategory": "profile",
+        "keywords": [
+          "使用者名字是",
+          "使用",
+          "用者",
+          "者名",
+          "名字",
+          "字是",
+          "許子翔",
+          "許子",
+          "子翔"
+        ],
+        "createdAt": 1777380950767,
+        "lastSeenAt": 1777380950767,
+        "lastUsedAt": 1777380968535
+      }
+    ],
+    "updatedAt": 1777381233668
+  }
+}

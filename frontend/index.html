@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HW02 - My Very Powerful Chatbot</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="bg-shape bg-shape-a"></div>
+    <div class="bg-shape bg-shape-b"></div>
+
+    <main class="app">
+      <aside class="history-sidebar">
+        <div class="history-sidebar-header">
+          <div>
+            <p class="history-sidebar-eyebrow">HW02 Chatbot</p>
+            <h1 class="history-sidebar-title">聊天紀錄</h1>
+            <p class="history-sidebar-subtitle">左側固定放對話歷史，設定改成隱藏抽屜。</p>
+          </div>
+          <button
+            id="toggleSettingsDrawer"
+            type="button"
+            class="ghost ghost-small settings-icon-button"
+            aria-label="打開設定"
+            title="打開設定"
+          >
+            <svg class="settings-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="3.2"></circle>
+              <path
+                d="M12 2.8v2.1m0 14.2v2.1m9.2-9.2h-2.1M4.9 12H2.8m15.7-6.5-1.5 1.5M7 17l-1.5 1.5m0-13 1.5 1.5M17 17l1.5 1.5"
+              ></path>
+            </svg>
+          </button>
+        </div>
+
+        <div class="history-sidebar-actions">
+          <button id="newChat" class="ghost">新對話</button>
+          <button id="clearAllHistory" type="button" class="ghost">清空全部</button>
+        </div>
+
+        <section class="history-section history-section-sidebar">
+          <div class="history-header">
+            <span class="history-title">對話列表</span>
+            <span id="statusText">Ready</span>
+          </div>
+          <div id="sessionList" class="session-list" aria-live="polite"></div>
+          <select id="sessionSelect" class="session-select is-hidden"></select>
+          <button id="deleteCurrentSession" type="button" class="session-delete is-hidden">刪除</button>
+        </section>
+      </aside>
+
+      <section class="chat-panel">
+        <div class="chat-topbar">
+          <div class="chat-topbar-summary">
+            <p id="selectedModelText" class="selected-model-info">目前模型：等待下一輪</p>
+            <p id="routeInfoText" class="route-info">選擇理由：尚未送出</p>
+          </div>
+        </div>
+        <div id="chatMessages" class="chat-messages"></div>
+
+        <form id="chatForm" class="chat-input-area">
+          <div class="composer-shell">
+            <textarea id="userInput" rows="2" placeholder="要求後續跟進變更"></textarea>
+
+            <div class="composer-footer">
+              <div class="composer-footer-group composer-footer-left">
+                <button
+                  id="toggleAttachmentPanel"
+                  type="button"
+                  class="composer-icon-button"
+                  aria-expanded="false"
+                  aria-controls="attachmentPanelBody"
+                >
+                  +
+                </button>
+                <div class="composer-attachment-summary">
+                  <span class="composer-attachment-label">附件</span>
+                  <span id="attachmentCountText" class="attachment-count">0 個附件</span>
+                </div>
+              </div>
+
+              <button id="sendBtn" type="submit" class="composer-send-button" aria-label="送出">
+                <span aria-hidden="true">↑</span>
+              </button>
+            </div>
+
+            <section id="attachmentPanelBody" class="attachment-panel-body" hidden>
+              <div class="attachment-panel-header">
+                <label for="imageUrlInput">圖片 URL / PDF</label>
+                <div class="attachment-actions">
+                  <label for="localImagePicker" class="ghost ghost-small attachment-picker-button">從電腦選檔</label>
+                  <button id="clearLocalImages" type="button" class="ghost ghost-small">清空附件</button>
+                </div>
+              </div>
+              <input id="localImagePicker" type="file" accept="image/*,.pdf,application/pdf" multiple class="is-hidden" />
+              <div
+                id="attachmentDropzone"
+                class="attachment-dropzone"
+                tabindex="0"
+                role="button"
+                aria-label="拖拉圖片或 PDF 到這裡，或按 Enter 選擇本機附件"
+              >
+                <p class="attachment-dropzone-title">拖拉圖片或 PDF 到這裡</p>
+                <p class="attachment-dropzone-text">支援 JPG、PNG、WEBP、GIF、PDF；PDF 會先轉成文字再交給模型。</p>
+              </div>
+              <div id="selectedUploadList" class="selected-upload-list" aria-live="polite">
+                <p class="selected-upload-empty">尚未選擇本機附件</p>
+              </div>
+              <textarea
+                id="imageUrlInput"
+                rows="2"
+                placeholder="也可以貼 https://...&#10;一行一張圖片網址，或貼 data:image/... base64"
+              ></textarea>
+              <p id="attachmentStatus" class="chat-attachment-help">可從電腦選圖片 / PDF 或貼圖片網址。</p>
+            </section>
+          </div>
+        </form>
+      </section>
+
+      <aside class="settings-panel">
+        <h2 class="settings-title">聊天設定</h2>
+        <p class="subtitle">模型 / 記憶 / 參數 / 工具</p>
+        <p class="api-tip">提示：要真正呼叫模型，請先在 <code>backend/.env</code> 放自己的 API key（支援 OpenAI / xAI / Groq）。</p>
+        <p class="api-tip">v2 支援本機歷史對話 + 後端長期記憶，會依問題與圖片自動選模型。</p>
+        <section class="compact-row">
+          <button id="toggleCompactSidebar" type="button" class="ghost ghost-small">濃縮介面</button>
+          <span id="compactStateText" class="compact-state">ON</span>
+        </section>
+        <section class="theme-row">
+          <button id="toggleTheme" type="button" class="ghost ghost-small">切到黑夜</button>
+          <span id="themeStateText" class="theme-state">LIGHT</span>
+        </section>
+
+        <section class="settings-group">
+          <label for="modelSelect">模型</label>
+          <select id="modelSelect"></select>
+          <div id="manualModelPanel" class="model-info-card">
+            <p id="manualModelCurrent" class="model-info-current">目前手動模型：等待載入</p>
+            <p id="modelStrengthInfo" class="model-info-strength">擅長：一般問答、文字整理</p>
+          </div>
+        </section>
+
+        <section class="settings-group">
+          <label for="systemPrompt">System Prompt</label>
+          <textarea id="systemPrompt" rows="4" placeholder="例如：你是一位超會教學的助教，回答簡潔、條列清楚。"></textarea>
+        </section>
+
+        <section class="settings-collapsible">
+          <button id="toggleAdvancedParams" type="button" class="collapse-toggle" aria-expanded="false" aria-controls="advancedParamsPanel">
+            <span>進階參數</span>
+            <span id="toggleAdvancedParamsText" class="collapse-toggle-text">展開</span>
+          </button>
+
+          <div id="advancedParamsPanel" class="collapsible-panel is-collapsed">
+            <section class="settings-grid">
+              <div class="slider-card">
+                <div class="slider-head">
+                  <label for="temperature">Temperature</label>
+                  <span id="temperatureValue" class="slider-value">0.7</span>
+                </div>
+                <input id="temperature" type="range" min="0" max="2" step="0.1" value="0.7" />
+                <p class="slider-help">低：更穩定保守。高：更有創意、更多變。</p>
+              </div>
+
+              <div class="slider-card">
+                <div class="slider-head">
+                  <label for="topP">Top P</label>
+                  <span id="topPValue" class="slider-value">1.0</span>
+                </div>
+                <input id="topP" type="range" min="0" max="1" step="0.1" value="1" />
+                <p class="slider-help">小：詞彙集中。大：詞彙選擇更多。</p>
+              </div>
+
+              <div class="slider-card">
+                <div class="slider-head">
+                  <label for="maxTokens">Max Tokens</label>
+                  <span id="maxTokensValue" class="slider-value">1024</span>
+                </div>
+                <input id="maxTokens" type="range" min="128" max="4096" step="32" value="1024" />
+                <p class="slider-help">限制單次回覆長度；越大可能回覆越長。</p>
+              </div>
+
+              <div class="slider-card">
+                <div class="slider-head">
+                  <label for="presencePenalty">Presence Penalty</label>
+                  <span id="presencePenaltyValue" class="slider-value">0.0</span>
+                </div>
+                <input id="presencePenalty" type="range" min="-2" max="2" step="0.1" value="0" />
+                <p class="slider-help">越高越鼓勵新主題，越低越傾向延續舊主題。</p>
+              </div>
+
+              <div class="slider-card">
+                <div class="slider-head">
+                  <label for="frequencyPenalty">Frequency Penalty</label>
+                  <span id="frequencyPenaltyValue" class="slider-value">0.0</span>
+                </div>
+                <input id="frequencyPenalty" type="range" min="-2" max="2" step="0.1" value="0" />
+                <p class="slider-help">越高越避免重複詞句，越低重複可能較多。</p>
+              </div>
+
+              <div class="slider-card">
+                <div class="slider-head">
+                  <label for="memoryTurns">記憶回合數</label>
+                  <span id="memoryTurnsValue" class="slider-value">8</span>
+                </div>
+                <input id="memoryTurns" type="range" min="1" max="30" step="1" value="8" />
+                <p class="slider-help">保留最近幾輪對話作為短期記憶。</p>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section class="settings-row">
+          <label class="switch-label" for="useMemory">
+            <input id="useMemory" type="checkbox" checked />
+            啟用短期記憶（RAM）
+          </label>
+          <button id="clearMemory" class="ghost">清除伺服器記憶</button>
+        </section>
+
+        <section class="settings-row">
+          <label class="switch-label" for="useLongTermMemory">
+            <input id="useLongTermMemory" type="checkbox" checked />
+            啟用長期記憶（檔案）
+          </label>
+          <button id="viewLongTermMemory" class="ghost">查看</button>
+          <button id="clearLongTermMemory" class="ghost">清除</button>
+        </section>
+
+        <section class="settings-row">
+          <label class="switch-label" for="autoRoute">
+            <input id="autoRoute" type="checkbox" checked />
+            自動路由模型
+          </label>
+          <span id="routeModeText" class="compact-state">AUTO</span>
+        </section>
+
+        <section class="settings-row">
+          <label class="switch-label" for="useTools">
+            <input id="useTools" type="checkbox" checked />
+            啟用 Tool / MCP
+          </label>
+          <button id="showTools" class="ghost">工具列表</button>
+        </section>
+      </aside>
+      <div id="settingsBackdrop" class="settings-backdrop"></div>
+    </main>
+
+    <div id="memoryManagerModal" class="memory-modal" hidden>
+      <div id="memoryManagerBackdrop" class="memory-modal-backdrop"></div>
+      <section class="memory-modal-card" role="dialog" aria-modal="true" aria-labelledby="memoryManagerTitle">
+        <div class="memory-modal-header">
+          <div>
+            <h2 id="memoryManagerTitle">長期記憶管理</h2>
+            <p id="memoryManagerMeta" class="memory-modal-meta">讀取中...</p>
+          </div>
+          <button id="closeMemoryManager" type="button" class="ghost ghost-small">關閉</button>
+        </div>
+
+        <div class="memory-modal-toolbar">
+          <button id="refreshMemoryManager" type="button" class="ghost ghost-small">重新整理</button>
+          <button id="selectAllMemoryFacts" type="button" class="ghost ghost-small">全選</button>
+          <button id="clearMemorySelection" type="button" class="ghost ghost-small">清空選取</button>
+          <button id="deleteSelectedMemoryFacts" type="button" class="ghost ghost-small">刪除選取</button>
+        </div>
+
+        <div id="memoryManagerList" class="memory-list" aria-live="polite"></div>
+      </section>
+    </div>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
